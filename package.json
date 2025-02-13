@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "llm-fe",
   "private": true,
   "sideEffects": false,
   "type": "module",
