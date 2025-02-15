@@ -21,18 +21,28 @@ export default function Chat() {
     const reader = response.body
       ?.pipeThrough(new TextDecoderStream())
       .getReader();
-    for (;;) {
-      const { value, done } = await reader?.read();
-      if (done) break;
-      const parsedChunkList =
-        parseChunkText<ChunkChatCompletionResponse>(value);
-      parsedChunkList.forEach((chunk) => {
-        if (chunk.event === "message" && chunk.answer) {
-          setText((prevText) => prevText + chunk.answer);
-        }
-      });
+    try {
+      for (;;) {
+        const { value, done } = await reader?.read();
+        if (done) break;
+
+        const parsedChunkList =
+          parseChunkText<ChunkChatCompletionResponse>(value);
+
+        parsedChunkList
+          .filter((chunk) => chunk != null)
+          .forEach((chunk) => {
+            if (chunk.event === "message" && chunk.answer) {
+              setText((prevText) => prevText + chunk.answer);
+            }
+          });
+      }
+    } catch (error) {
+      console.error("Stream processing error:", error);
+      // TODO: エラー時のUIフィードバックを実装
+    } finally {
+      reader?.releaseLock();
     }
-    reader?.releaseLock();
   };
 
   return (
