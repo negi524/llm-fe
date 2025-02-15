@@ -6,7 +6,17 @@ export default function Chat() {
   const [text, setText] = useState<string>("");
 
   const sendMessage = async (): Promise<void> => {
-    const response = await fetch("/api/chat-messages");
+    const messageBody: ChatMessagesRequestBody = {
+      query: "200文字程度のダミーテキストを日本語で返してください",
+    };
+    console.log(crypto.randomUUID());
+    const response = await fetch("/api/chat-messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...messageBody }),
+    });
 
     const reader = response.body
       ?.pipeThrough(new TextDecoderStream())
