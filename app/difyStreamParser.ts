@@ -2,24 +2,29 @@ export class DifyStreamParser {
   /**
    * 不自然に分割されたデータを格納する
    */
-  private buffer?: string;
+  private buffer: string;
 
   constructor() {
-    this.buffer = undefined;
+    // バッファが存在しない場合は空文字
+    this.buffer = "";
   }
 
-  /**
-   * バッファの中身をリセットする
-   */
-  private clearBuffer(): void {
-    this.buffer = undefined;
-  }
   /**
    * バッファの有無を確認する
    * @returns バッファが存在する場合true
    */
   private hasBuffer(): boolean {
-    return this.buffer !== undefined;
+    return this.buffer.length > 0;
+  }
+
+  /**
+   * バッファの中身をクリアしつつ取り出す
+   * @returns バッファに格納されている文字列
+   */
+  private popBuffer(): string {
+    const result = this.buffer;
+    this.buffer = "";
+    return result;
   }
 
   /**
@@ -71,13 +76,11 @@ export class DifyStreamParser {
    */
   private isParsableDataLine(line: string): boolean {
     if (!this.isDataRaw(line)) {
-      console.warn("パース不可データ");
       return false;
     }
-    // 中身を取り出す
+    // 中身を取り出してJSONパース可能か確認
     const jsonString = this.getDataContent(line);
     if (!this.isValidJson(jsonString)) {
-      console.warn("パース不可データ");
       return false;
     }
     return true;
@@ -94,11 +97,9 @@ export class DifyStreamParser {
     const results: T[] = [];
     for (const line of lines) {
       // バッファが存在する場合、結合する
-      const targetRaw = this.hasBuffer() ? this.buffer + line : line;
-      this.hasBuffer() && this.clearBuffer();
+      const targetRaw = this.hasBuffer() ? this.popBuffer() + line : line;
 
       if (this.isParsableDataLine(targetRaw)) {
-        // パース可能な場合はパースしてデータ保管
         const jsonString = this.getDataContent(targetRaw);
         results.push(JSON.parse(jsonString));
       } else {
