@@ -48,9 +48,13 @@ export default function Chat() {
     <div>
       <h1>Chat page</h1>
       <hr />
-      <button onClick={sendMessage}>Send Message</button>
-      <p>{text}</p>
-      <Markdown />
+      <button
+        className="inline-flex h-12 items-center justify-center rounded-md bg-neutral-950 px-6 font-medium text-neutral-50 transition active:scale-110 "
+        onClick={sendMessage}
+      >
+        Send message
+      </button>
+      <Markdown content={text} />
     </div>
   );
 }

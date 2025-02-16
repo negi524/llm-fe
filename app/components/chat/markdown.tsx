@@ -6,7 +6,7 @@ import { markdownContent } from "./markdownContent";
 
 import "./markdown.modules.scss";
 
-export default function Markdown() {
+export default function Markdown(props: { content: string }) {
   return (
     <div className="markdown-body">
       <ReactMarkdown
@@ -16,7 +16,7 @@ export default function Markdown() {
           remarkBreaks,
         ]}
       >
-        {markdownContent}
+        {props.content}
       </ReactMarkdown>
     </div>
   );
