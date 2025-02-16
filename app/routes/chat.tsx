@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { parseChunkText } from "~/streamParser";
+import { DifyStreamParser } from "~/difyStreamParser";
 import { ChunkChatCompletionResponse } from "~/types/chatMessagesResponse";
 
 export default function Chat() {
@@ -7,7 +7,7 @@ export default function Chat() {
 
   const sendMessage = async (): Promise<void> => {
     const messageBody: ChatMessagesRequestBody = {
-      query: "200文字程度のダミーテキストを日本語で返してください",
+      query: "ピッタリ100文字のテキストを、改行込みの日本語で出力してください",
     };
     console.log(crypto.randomUUID());
     const response = await fetch("/api/chat-messages", {
@@ -21,21 +21,20 @@ export default function Chat() {
     const reader = response.body
       ?.pipeThrough(new TextDecoderStream())
       .getReader();
+    const difyStreamParser = new DifyStreamParser();
     try {
       for (;;) {
         const { value, done } = await reader?.read();
         if (done) break;
 
         const parsedChunkList =
-          parseChunkText<ChunkChatCompletionResponse>(value);
+          difyStreamParser.parseChunkText<ChunkChatCompletionResponse>(value);
 
-        parsedChunkList
-          .filter((chunk) => chunk != null)
-          .forEach((chunk) => {
-            if (chunk.event === "message" && chunk.answer) {
-              setText((prevText) => prevText + chunk.answer);
-            }
-          });
+        parsedChunkList.forEach((chunk) => {
+          if (chunk.event === "message" && chunk.answer) {
+            setText((prevText) => prevText + chunk.answer);
+          }
+        });
       }
     } catch (error) {
       console.error("Stream processing error:", error);
