@@ -1,10 +1,10 @@
 import { useState } from "react";
+import Markdown from "~/components/chat/markdown";
 import { DifyStreamParser } from "~/difyStreamParser";
 import { ChunkChatCompletionResponse } from "~/types/chatMessagesResponse";
 
 export default function Chat() {
   const [text, setText] = useState<string>("");
-
   const sendMessage = async (): Promise<void> => {
     const messageBody: ChatMessagesRequestBody = {
       query: "ピッタリ100文字のテキストを、改行込みの日本語で出力してください",
@@ -48,8 +48,13 @@ export default function Chat() {
     <div>
       <h1>Chat page</h1>
       <hr />
-      <button onClick={sendMessage}>Send Message</button>
-      <p>{text}</p>
+      <button
+        className="inline-flex h-12 items-center justify-center rounded-md bg-neutral-950 px-6 font-medium text-neutral-50 transition active:scale-110 "
+        onClick={sendMessage}
+      >
+        Send message
+      </button>
+      <Markdown content={text} />
     </div>
   );
 }
