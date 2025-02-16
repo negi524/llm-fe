@@ -58,4 +58,7 @@ const code = "code"
 # Horizontal rule
 
 ---
+
+# Line break.
+改行\n改行\n改行\n
 `;
