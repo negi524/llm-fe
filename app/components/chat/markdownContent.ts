@@ -1,3 +1,6 @@
+/**
+ * テスト用のMarkdownコンテンツ
+ */
 export const markdownContent = `
 # Heading 1
 
